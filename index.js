@@ -3,20 +3,21 @@ function startGame() {
 }
 
 var myGamePiece;
+var myObstacles = [];
 
 function startGame() {
   myGamePiece = new component(30, 30, "green", 10, 120);
-  myObstacle = new component(10, 200, "maroon", 300, 120);
   myGameArea.start();
 }
 
 var myGameArea = {
   canvas : document.createElement("canvas"),
   start : function() {
-    this.canvas.width = 480;
-    this.canvas.height = 270;
+    this.canvas.width = 530;
+    this.canvas.height = 300;
     this.context = this.canvas.getContext("2d");
     document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+    this.frameNo = 0;
     this.interval = setInterval(updateGameArea, 20);
     window.addEventListener('keydown', function (e) {
       myGameArea.keys = (myGameArea.keys || []);
@@ -32,6 +33,11 @@ var myGameArea = {
   stop : function() {
     clearInterval(this.interval);
   }
+}
+
+function everyinterval(n) {
+  if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+  return false;
 }
 
 function component(width, height, color, x, y, type) {
@@ -83,22 +89,43 @@ function component(width, height, color, x, y, type) {
 }
 
 function updateGameArea() {
-  if (myGamePiece.crashWith(myObstacle)) {
-    myGameArea.stop();
-  } else {
-    myGameArea.clear();
-    myObstacle.x += -1;
-    myObstacle.update();
-    myGamePiece.speedX = 0;
-    myGamePiece.speedY = 0;
-    if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -2; }
-    if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 2; }
-    if (myGameArea.keys && myGameArea.keys[38]) {myGamePiece.speedY = -2; }
-    if (myGameArea.keys && myGameArea.keys[40]) {myGamePiece.speedY = 2; }
-    myGamePiece.newPos();
-    myGamePiece.update();
+  var x, y;
+  for (i = 0; i < myObstacles.length; i += 1) {
+    if (myGamePiece.crashWith(myObstacles[i])) {
+        myGameArea.stop();
+        return;
+    }
   }
+  myGameArea.clear();
+  myGameArea.frameNo += 1;
+  if (myGameArea.frameNo == 1 || everyinterval(150)) {
+    x = myGameArea.canvas.width;
+    minHeight = 20;
+    maxHeight = 200;
+    height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
+    minGap = 50;
+    maxGap = 200;
+    gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
+    myObstacles.push(new component(10, height, "maroon", x, 0));
+    myObstacles.push(new component(10, x - height - gap, "maroon", x, height + gap));
+  }
+  for (i = 0; i < myObstacles.length; i += 1) {
+    myObstacles[i].x += -1;
+    myObstacles[i].update();
+  }
+
+  myGamePiece.newPos();
+  myGamePiece.update();
+  myGamePiece.speedX = 0;
+  myGamePiece.speedY = 0;
+  if (myGameArea.keys && myGameArea.keys[37]) {myGamePiece.speedX = -1; }
+  if (myGameArea.keys && myGameArea.keys[39]) {myGamePiece.speedX = 1; }
+  if (myGameArea.keys && myGameArea.keys[38]) {myGamePiece.speedY = -1; }
+  if (myGameArea.keys && myGameArea.keys[40]) {myGamePiece.speedY = 1; }
+  myGamePiece.newPos();
+  myGamePiece.update();
 }
+
 
 function moveUp() {
   myGamePiece.speedY = -1;
