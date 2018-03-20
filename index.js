@@ -4,9 +4,11 @@ function startGame() {
 
 var myGamePiece;
 var myObstacles = [];
+var myScore;
 
 function startGame() {
   myGamePiece = new component(30, 30, "green", 10, 120);
+  myScore = new component("30px", "Consolas", "black", 280, 40, "text");
   myGameArea.start();
 }
 
@@ -42,10 +44,6 @@ function everyinterval(n) {
 
 function component(width, height, color, x, y, type) {
   this.type = type;
-  if (type == "image") {
-    this.image = new Image();
-    this.image.src = color;
-  }
   this.width = width;
   this.height = height;
   this.speedX = 0;
@@ -54,11 +52,10 @@ function component(width, height, color, x, y, type) {
   this.y = y;
   this.update = function() {
     ctx = myGameArea.context;
-    if (type == "image") {
-      ctx.drawImage(this.image,
-      this.x,
-      this.y,
-      this.width, this.height);
+    if (type == "text") {
+      ctx.font = this.width + " " + this.height;
+      ctx.fillStyle = color;
+      ctx.fillText(this.text, this.x, this.y);
     } else {
       ctx.fillStyle = color;
       ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -114,6 +111,8 @@ function updateGameArea() {
     myObstacles[i].update();
   }
 
+  myScore.text="SCORE: " + myGameArea.frameNo;
+  myScore.update();
   myGamePiece.newPos();
   myGamePiece.update();
   myGamePiece.speedX = 0;
