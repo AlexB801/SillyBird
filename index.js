@@ -4,19 +4,20 @@ function startGame() {
 
 var myGamePiece;
 var myObstacles = [];
+var myObjects = [];
 var myScore;
 
 function startGame() {
   myGamePiece = new component(30, 30, "green", 10, 120);
-  myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+  myScore = new component("25px", "Consolas", "black", 620, 40, "text");
   myGameArea.start();
 }
 
 var myGameArea = {
   canvas : document.createElement("canvas"),
   start : function() {
-    this.canvas.width = 530;
-    this.canvas.height = 300;
+    this.canvas.width = 800;
+    this.canvas.height = 450;
     this.context = this.canvas.getContext("2d");
     document.body.insertBefore(this.canvas, document.body.childNodes[0]);
     this.frameNo = 0;
@@ -98,10 +99,10 @@ function updateGameArea() {
   if (myGameArea.frameNo == 1 || everyinterval(150)) {
     x = myGameArea.canvas.width;
     minHeight = 20;
-    maxHeight = 200;
+    maxHeight = 400;
     height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
     minGap = 50;
-    maxGap = 200;
+    maxGap = 150;
     gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
     myObstacles.push(new component(10, height, "maroon", x, 0));
     myObstacles.push(new component(10, x - height - gap, "maroon", x, height + gap));
