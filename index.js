@@ -4,11 +4,12 @@ function startGame() {
 
 var myGamePiece;
 var myObstacles = [];
-var myObjects = [];
+var myObject;
 var myScore;
 
 function startGame() {
-  myGamePiece = new component(30, 30, "green", 10, 120);
+  myGamePiece = new component(30, 30, "green", 10, 210);
+  myObject = new component(30, 30, "black", 200, 0);
   myScore = new component("25px", "Consolas", "black", 620, 40, "text");
   myGameArea.start();
 }
@@ -49,6 +50,8 @@ function component(width, height, color, x, y, type) {
   this.height = height;
   this.speedX = 0;
   this.speedY = 0;
+  // this.gravity = 0.01;
+  // this.gravitySpeed = 0;
   this.x = x;
   this.y = y;
   this.update = function() {
@@ -61,6 +64,11 @@ function component(width, height, color, x, y, type) {
       ctx.fillStyle = color;
       ctx.fillRect(this.x, this.y, this.width, this.height);
     }
+    // this.newPos = function() {
+    //     this.gravitySpeed += this.gravity;
+    //     this.x += this.speedX;
+    //     this.y += this.speedY + this.gravitySpeed;
+    // }
   }
   this.newPos = function() {
     this.x += this.speedX;
@@ -90,13 +98,17 @@ function updateGameArea() {
   var x, y;
   for (i = 0; i < myObstacles.length; i += 1) {
     if (myGamePiece.crashWith(myObstacles[i])) {
-        myGameArea.stop();
-        return;
+      myGameArea.stop();
+      return;
+    }
+    if (myGamePiece.crashWith(myObject)) {
+      myGameArea.stop();
+      return;
     }
   }
   myGameArea.clear();
   myGameArea.frameNo += 1;
-  if (myGameArea.frameNo == 1 || everyinterval(150)) {
+  if (myGameArea.frameNo == 1 || everyinterval(130)) {
     x = myGameArea.canvas.width;
     minHeight = 20;
     maxHeight = 400;
@@ -108,12 +120,14 @@ function updateGameArea() {
     myObstacles.push(new component(10, x - height - gap, "maroon", x, height + gap));
   }
   for (i = 0; i < myObstacles.length; i += 1) {
-    myObstacles[i].x += -1;
+    myObstacles[i].x += -1.50;
     myObstacles[i].update();
   }
 
   myScore.text="SCORE: " + myGameArea.frameNo;
   myScore.update();
+  myObject.y += 1.5;
+  myObject.update();
   myGamePiece.newPos();
   myGamePiece.update();
   myGamePiece.speedX = 0;
